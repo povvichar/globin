@@ -1,3 +1,5 @@
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { BlurView } from 'expo-blur';
 import {
   ScrollView,
@@ -7,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RootStackParamList } from '../navigation/AppNavigator';
 import { colors } from '../constants/colors';
 import { typography } from '../constants/typography';
 import {
@@ -34,6 +37,7 @@ type Props = {
 
 export const Drawer = ({ onClose }: Props) => {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   return (
     <View style={styles.panel}>
@@ -93,7 +97,7 @@ export const Drawer = ({ onClose }: Props) => {
             <Text style={styles.avatarInitials}>MC</Text>
           </View>
           <Text style={styles.userName}>Mony Chanbopha</Text>
-          <TouchableOpacity style={styles.settingsBtn} activeOpacity={0.7}>
+          <TouchableOpacity style={styles.settingsBtn} activeOpacity={0.7} onPress={() => navigation.navigate('Settings')}>
             <SettingsIcon size={22} />
           </TouchableOpacity>
         </View>

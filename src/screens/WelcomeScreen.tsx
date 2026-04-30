@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { BlurView } from 'expo-blur';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -45,8 +46,12 @@ export const WelcomeScreen = () => {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.langPill} activeOpacity={0.8} onPress={() => setOpen(o => !o)}>
-          <selected.Icon size={22} />
-          <Text style={styles.langText}>{lang === 'en' ? 'ENG' : 'KHM'}</Text>
+          <BlurView intensity={60} tint="light" style={styles.langBlur}>
+            <View style={styles.langInner}>
+              <selected.Icon size={22} />
+              <Text style={styles.langText}>{lang === 'en' ? 'ENG' : 'KHM'}</Text>
+            </View>
+          </BlurView>
         </TouchableOpacity>
 
         {open && (
@@ -127,10 +132,23 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   langPill: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.6)',
+    shadowColor: '#fff',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  langBlur: {
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  langInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 1)',
-    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.25)',
     paddingHorizontal: 14,
     paddingVertical: 8,
     gap: 8,
@@ -203,7 +221,6 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     paddingHorizontal: 24,
     paddingBottom: 12,
-    color: colors.white,
   },
   divider: {
     flexDirection: 'row',
