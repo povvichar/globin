@@ -1,3 +1,4 @@
+import { BlurView } from 'expo-blur';
 import {
   ScrollView,
   StyleSheet,
@@ -43,12 +44,19 @@ export const Drawer = ({ onClose }: Props) => {
         ]}
       >
         <View style={styles.topRow}>
-          <View style={styles.searchBar}>
-            <SearchIcon size={18} />
-            <Text style={styles.searchPlaceholder}>Search</Text>
-          </View>
-          <TouchableOpacity style={styles.collapseBtn} onPress={onClose} activeOpacity={0.7}>
-            <CollapseIcon size={20} />
+          {/* Liquid Glass search bar */}
+          <BlurView intensity={60} tint="light" style={styles.searchBar}>
+            <View style={styles.searchBarInner}>
+              <SearchIcon size={22} />
+              <Text style={styles.searchPlaceholder}>Search</Text>
+            </View>
+          </BlurView>
+
+          {/* Liquid Glass collapse button */}
+          <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
+            <BlurView intensity={60} tint="light" style={styles.collapseBtn}>
+              <CollapseIcon size={22} />
+            </BlurView>
           </TouchableOpacity>
         </View>
 
@@ -108,29 +116,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   searchBar: {
     flex: 1,
+    borderRadius: 50,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.6)',
+    shadowColor: '#fff',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  searchBarInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
-    borderRadius: 50,
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 12,
     gap: 8,
+    backgroundColor: 'rgba(255,255,255,0.25)',
   },
   searchPlaceholder: {
     ...typography.body,
     color: colors.textMuted,
   },
   collapseBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.white,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.6)',
+    shadowColor: '#fff',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   menuItem: {
     flexDirection: 'row',

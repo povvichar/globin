@@ -1,5 +1,6 @@
 import { ClipPath, Defs, G, Path, Rect, Svg } from 'react-native-svg';
 import KhSvg from '../../assets/kh.svg';
+import SettingsSvg from '../../assets/settings.svg';
 
 type Props = { size?: number };
 
@@ -83,6 +84,12 @@ export const SendIcon = ({ size = 24 }: Props) => (
   </Svg>
 );
 
+export const ChatIcon = ({ size = 24 }: Props) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.8214 2.48697 15.5291 3.33782 17L2 22L7 20.6622C8.47087 21.5131 10.1786 22 12 22Z" stroke="black" strokeWidth="1.5" strokeLinejoin="round" />
+  </Svg>
+);
+
 export const SearchIcon = ({ size = 24 }: Props) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     <Path d="M17 17L21 21" stroke="#131316" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -120,10 +127,7 @@ export const ChevronDownIcon = ({ size = 24 }: Props) => (
 );
 
 export const SettingsIcon = ({ size = 24 }: Props) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <Path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="black" strokeWidth="1.5" />
-    <Path d="M20 12C20 12.4 19.97 12.79 19.91 13.17L21.93 14.7C22.12 14.85 22.17 15.11 22.06 15.33L20.15 18.67C20.04 18.89 19.79 18.97 19.56 18.89L17.2 17.94C16.71 18.32 16.17 18.63 15.59 18.87L15.25 21.39C15.21 21.63 15 21.81 14.75 21.81H10.93C10.68 21.81 10.47 21.63 10.43 21.39L10.09 18.87C9.51 18.63 8.97 18.31 8.48 17.94L6.12 18.89C5.89 18.97 5.64 18.89 5.53 18.67L3.62 15.33C3.5 15.11 3.56 14.85 3.75 14.7L5.77 13.17C5.71 12.79 5.68 12.4 5.68 12C5.68 11.6 5.71 11.21 5.77 10.83L3.75 9.3C3.56 9.15 3.51 8.89 3.62 8.67L5.53 5.33C5.64 5.11 5.89 5.03 6.12 5.11L8.48 6.06C8.97 5.68 9.51 5.37 10.09 5.13L10.43 2.61C10.47 2.37 10.68 2.19 10.93 2.19H14.75C15 2.19 15.21 2.37 15.25 2.61L15.59 5.13C16.17 5.37 16.71 5.69 17.2 6.06L19.56 5.11C19.79 5.03 20.04 5.11 20.15 5.33L22.06 8.67C22.17 8.89 22.12 9.15 21.93 9.3L19.91 10.83C19.97 11.21 20 11.6 20 12Z" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </Svg>
+  <SettingsSvg width={size} height={size} />
 );
 
 export const DotsIcon = ({ size = 24 }: Props) => (

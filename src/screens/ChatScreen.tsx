@@ -49,11 +49,6 @@ export const ChatScreen = () => {
     outputRange: [0, SLIDE_DISTANCE],
   });
 
-  const scale = slideAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0.94],
-  });
-
   const borderRadius = radiusAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [0, 28],
@@ -66,7 +61,7 @@ export const ChatScreen = () => {
       <Animated.View
         style={[
           styles.mainShadow,
-          { transform: [{ translateX }, { scale }] },
+          { transform: [{ translateX }] },
         ]}
       >
         <Animated.View style={[styles.mainClip, { borderRadius }]}>

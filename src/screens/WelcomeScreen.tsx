@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
-    minWidth: 160,
+    minWidth: 140,
   },
   dropdownItem: {
     flexDirection: 'row',
@@ -166,8 +166,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   dropdownItemBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(144, 144, 144, 0.1)',
+    //borderBottomWidth: 1,
+    //borderBottomColor: 'rgba(144, 144, 144, 0.1)',
   },
   dropdownLabel: {
     fontFamily: 'DMSans_400Regular',
@@ -203,6 +203,7 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     paddingHorizontal: 24,
     paddingBottom: 12,
+    color: colors.white,
   },
   divider: {
     flexDirection: 'row',
