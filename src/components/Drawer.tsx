@@ -1,7 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { BlurView } from 'expo-blur';
+import { useRef, useState } from 'react';
 import {
+  Animated,
   ScrollView,
   StyleSheet,
   Text,
@@ -38,6 +40,23 @@ type Props = {
 export const Drawer = ({ onClose }: Props) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const [chatsOpen, setChatsOpen] = useState(true);
+  const rotateAnim = useRef(new Animated.Value(1)).current;
+
+  const toggleChats = () => {
+    const toValue = chatsOpen ? 0 : 1;
+    Animated.timing(rotateAnim, {
+      toValue,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+    setChatsOpen(o => !o);
+  };
+
+  const chevronRotate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '180deg'],
+  });
 
   return (
     <View style={styles.panel}>
@@ -59,7 +78,7 @@ export const Drawer = ({ onClose }: Props) => {
           {/* Liquid Glass collapse button */}
           <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
             <BlurView intensity={60} tint="light" style={styles.collapseBtn}>
-              <CollapseIcon size={22} />
+              <CollapseIcon size={20} />
             </BlurView>
           </TouchableOpacity>
         </View>
@@ -74,23 +93,27 @@ export const Drawer = ({ onClose }: Props) => {
           <Text style={styles.menuLabel}>Prompts</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={toggleChats}>
           <HistoryIcon size={22} />
           <Text style={styles.menuLabel}>Chats</Text>
-          <View style={styles.chevron}>
+          <Animated.View style={[styles.chevron, { transform: [{ rotate: chevronRotate }] }]}>
             <ChevronDownIcon size={20} />
-          </View>
+          </Animated.View>
         </TouchableOpacity>
 
-        <ScrollView style={styles.chatList} showsVerticalScrollIndicator={false}>
-          {MOCK_CHATS.map((chat, i) => (
-            <TouchableOpacity key={i} style={styles.chatItem} activeOpacity={0.7}>
-              <Text style={styles.chatItemText} numberOfLines={1}>
-                {chat}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <View style={styles.chatSection}>
+          {chatsOpen && (
+            <ScrollView style={styles.chatList} showsVerticalScrollIndicator={false}>
+              {MOCK_CHATS.map((chat, i) => (
+                <TouchableOpacity key={i} style={styles.chatItem} activeOpacity={0.7}>
+                  <Text style={styles.chatItemText} numberOfLines={1}>
+                    {chat}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )}
+        </View>
 
         <View style={styles.userRow}>
           <View style={styles.avatar}>
@@ -172,6 +195,9 @@ const styles = StyleSheet.create({
   },
   chevron: {
     marginLeft: 'auto',
+  },
+  chatSection: {
+    flex: 1,
   },
   chatList: {
     flex: 1,

@@ -4,11 +4,13 @@ import LeftSvg from '../../assets/left.svg';
 import BellSvg from '../../assets/bell.svg';
 import BookSvg from '../../assets/book.svg';
 import DataSvg from '../../assets/data.svg';
+import DeleteSvg from '../../assets/delete.svg';
 import GlobSvg from '../../assets/glob.svg';
 import KhSvg from '../../assets/kh.svg';
 import LockedSvg from '../../assets/locked.svg';
 import LogoutSvg from '../../assets/logout.svg';
 import SettingsSvg from '../../assets/settings.svg';
+import ArchiveSvg from '../../assets/Archive.svg';
 
 type Props = { size?: number };
 
@@ -180,4 +182,11 @@ export const LockIcon = ({ size = 24 }: Props) => (
 
 export const LogoutIcon = ({ size = 24 }: Props) => (
   <LogoutSvg width={size} height={size} />
+);
+
+export const DeleteIcon = ({ size = 24 }: Props) => (
+  <DeleteSvg width={size} height={size} />
+);
+export const ArchiveIcon = ({ size = 24 }: Props) => (
+  <ArchiveSvg width={size} height={size} />
 );

@@ -20,12 +20,12 @@ export const ChatInput = () => {
 
       <View style={styles.actionsRow}>
         <TouchableOpacity style={styles.squareBtn} activeOpacity={0.7}>
-          <AddSquareIcon size={22} />
+          <AddSquareIcon size={24} />
         </TouchableOpacity>
 
         <View style={styles.rightActions}>
           <TouchableOpacity style={styles.iconBtn} activeOpacity={0.7}>
-            <MicIcon size={22} />
+            <MicIcon size={24} />
           </TouchableOpacity>
 
           <TouchableOpacity activeOpacity={0.85}>
@@ -89,8 +89,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sendBtn: {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',

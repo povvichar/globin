@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(255,255,255,0.25)',
     paddingHorizontal: 24,
-    height: 56,
+    height: 48,
     gap: 12,
   },
   iconWrap: {

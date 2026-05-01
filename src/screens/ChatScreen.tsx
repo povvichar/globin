@@ -77,10 +77,10 @@ export const ChatScreen = () => {
 
               <View style={styles.rightActions}>
                 <TouchableOpacity hitSlop={10} activeOpacity={0.6}>
-                  <PencilIcon size={22} />
+                  <PencilIcon size={24} />
                 </TouchableOpacity>
                 <TouchableOpacity hitSlop={10} activeOpacity={0.6}>
-                  <DotsIcon size={22} />
+                  <DotsIcon size={24} />
                 </TouchableOpacity>
               </View>
             </View>
