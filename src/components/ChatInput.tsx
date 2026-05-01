@@ -4,8 +4,19 @@ import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { AddSquareIcon, MicIcon, SendIcon } from './Icons';
 import { colors, gradients } from '../constants/colors';
 
-export const ChatInput = () => {
+type Props = {
+  onSend: (text: string) => void;
+};
+
+export const ChatInput = ({ onSend }: Props) => {
   const [value, setValue] = useState('');
+
+  const handleSend = () => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    onSend(trimmed);
+    setValue('');
+  };
 
   return (
     <View style={styles.wrapper}>
@@ -16,6 +27,8 @@ export const ChatInput = () => {
         value={value}
         onChangeText={setValue}
         multiline
+        onSubmitEditing={handleSend}
+        blurOnSubmit={false}
       />
 
       <View style={styles.actionsRow}>
@@ -28,7 +41,7 @@ export const ChatInput = () => {
             <MicIcon size={24} />
           </TouchableOpacity>
 
-          <TouchableOpacity activeOpacity={0.85}>
+          <TouchableOpacity activeOpacity={0.85} onPress={handleSend}>
             <LinearGradient
               colors={gradients.brand}
               start={{ x: 0, y: 0 }}
