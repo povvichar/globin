@@ -16,10 +16,9 @@ import { ChatInput } from '../components/ChatInput';
 import { Drawer } from '../components/Drawer';
 import { GlobinLogo } from '../components/GlobinLogo';
 import { GradientText } from '../components/GradientText';
-import { DotsIcon, MenuIcon, PencilIcon } from '../components/Icons';
-import { colors, gradients } from '../constants/colors';
+import { CopyIcon, DotsIcon, MenuIcon, PencilIcon, ShareIcon, SpeakerIcon, ThumbDownIcon, ThumbUpIcon } from '../components/Icons';
+import { colors } from '../constants/colors';
 import { typography } from '../constants/typography';
-import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const PEEK_WIDTH = 70;
@@ -79,10 +78,7 @@ const TypingIndicator = () => {
 
   return (
     <View style={styles.botRow}>
-      <View style={styles.botAvatar}>
-        <GlobinLogo size={24} />
-      </View>
-      <View style={[styles.bubble, styles.botBubble, styles.typingBubble]}>
+      <View style={styles.typingBubble}>
         <Animated.View style={[styles.typingDot, dotStyle(dot1)]} />
         <Animated.View style={[styles.typingDot, dotStyle(dot2)]} />
         <Animated.View style={[styles.typingDot, dotStyle(dot3)]} />
@@ -95,25 +91,24 @@ const MessageBubble = ({ message }: { message: Message }) => {
   if (message.role === 'user') {
     return (
       <View style={styles.userRow}>
-        <LinearGradient
-          colors={gradients.brand}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.bubble, styles.userBubble]}
-        >
+        <View style={styles.userBubble}>
           <Text style={styles.userText}>{message.text}</Text>
-        </LinearGradient>
+        </View>
       </View>
     );
   }
 
   return (
     <View style={styles.botRow}>
-      <View style={styles.botAvatar}>
-        <GlobinLogo size={24} />
-      </View>
-      <View style={[styles.bubble, styles.botBubble]}>
+      <View style={styles.botContent}>
         <Text style={styles.botText}>{message.text}</Text>
+        <View style={styles.actionsRow}>
+          <TouchableOpacity hitSlop={8} activeOpacity={0.6}><CopyIcon size={18} /></TouchableOpacity>
+          <TouchableOpacity hitSlop={8} activeOpacity={0.6}><ThumbUpIcon size={18} /></TouchableOpacity>
+          <TouchableOpacity hitSlop={8} activeOpacity={0.6}><ThumbDownIcon size={18} /></TouchableOpacity>
+          <TouchableOpacity hitSlop={8} activeOpacity={0.6}><ShareIcon size={18} /></TouchableOpacity>
+          <TouchableOpacity hitSlop={8} activeOpacity={0.6}><DotsIcon size={18} /></TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -123,6 +118,7 @@ export const ChatScreen = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [conversationTitle, setConversationTitle] = useState<string | null>(null);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const radiusAnim = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef<FlatList>(null);
@@ -162,6 +158,11 @@ export const ChatScreen = () => {
       timestamp: new Date(),
     };
 
+    if (messages.length === 0) {
+      const words = text.trim().split(/\s+/).slice(0, 5).join(' ');
+      setConversationTitle(words.length < text.trim().length ? words + '…' : words);
+    }
+
     setMessages(prev => [...prev, userMsg]);
     setIsTyping(true);
 
@@ -200,16 +201,24 @@ export const ChatScreen = () => {
               </TouchableOpacity>
 
               <View style={styles.titleCenter} pointerEvents="none">
-                <GradientText text="Globin" style={typography.headerTitle} />
+                {conversationTitle ? (
+                  <Text style={styles.topicTitle} numberOfLines={1}>{conversationTitle}</Text>
+                ) : (
+                  <GradientText text="Globin" style={typography.headerTitle}/>
+                )}
               </View>
 
               <View style={styles.rightActions}>
-                <TouchableOpacity hitSlop={10} activeOpacity={0.6} onPress={() => setMessages([])}>
-                  <PencilIcon size={24} />
-                </TouchableOpacity>
-                <TouchableOpacity hitSlop={10} activeOpacity={0.6}>
-                  <DotsIcon size={24} />
-                </TouchableOpacity>
+                {!showEmptyState && (
+                  <>
+                    <TouchableOpacity hitSlop={10} activeOpacity={0.6} onPress={() => { setMessages([]); setConversationTitle(null); }}>
+                      <PencilIcon size={24} />
+                    </TouchableOpacity>
+                    <TouchableOpacity hitSlop={10} activeOpacity={0.6}>
+                      <DotsIcon size={24} />
+                    </TouchableOpacity>
+                  </>
+                )}
               </View>
             </View>
 
@@ -219,9 +228,9 @@ export const ChatScreen = () => {
             >
               {showEmptyState ? (
                 <View style={styles.emptyState}>
-                  <GlobinLogo size={64} />
-                  <Text style={styles.emptyTitle}>How can I help you?</Text>
-                  <Text style={styles.emptySubtitle}>Ask me anything in Khmer or English</Text>
+                  <GlobinLogo size={60} />
+                  <Text style={styles.emptyTitle}></Text>
+                  <Text style={styles.emptySubtitle}></Text>
                 </View>
               ) : (
                 <FlatList
@@ -282,9 +291,14 @@ const styles = StyleSheet.create({
   },
   titleCenter: {
     position: 'absolute',
-    left: 0,
-    right: 0,
+    left: 60,
+    right: 60,
     alignItems: 'center',
+  },
+  topicTitle: {
+    ...typography.headerTitle,
+    fontSize: 16,
+    color: colors.textPrimary,
   },
   rightActions: {
     flexDirection: 'row',
@@ -317,8 +331,8 @@ const styles = StyleSheet.create({
   },
   botRow: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: 8,
+    alignItems: 'flex-start',
+    gap: 10,
   },
   botAvatar: {
     width: 32,
@@ -333,31 +347,31 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-  bubble: {
-    maxWidth: SCREEN_WIDTH * 0.72,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 20,
-  },
   userBubble: {
+    maxWidth: SCREEN_WIDTH * 0.72,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 20,
     borderBottomRightRadius: 4,
+    backgroundColor: '#EBEBEB',
   },
-  botBubble: {
-    backgroundColor: colors.white,
-    borderBottomLeftRadius: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 1,
+  botContent: {
+    flex: 1,
+    gap: 10,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
   },
   userText: {
     ...typography.body,
-    color: colors.white,
+    color: colors.textPrimary,
   },
   botText: {
     ...typography.body,
     color: colors.textPrimary,
+    paddingTop: 4,
   },
   typingBubble: {
     flexDirection: 'row',
