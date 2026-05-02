@@ -16,6 +16,7 @@ import ThumbUpSvg from '../../assets/ThumbUp.svg';
 import ThumbDownSvg from '../../assets/ThumbDown.svg';
 import ShareSvg from '../../assets/share.svg';
 import DotsSvg from '../../assets/dots.svg';
+import LoadingSvg from '../../assets/app-icon-loading.svg';
 
 type Props = { size?: number };
 
@@ -192,6 +193,10 @@ export const DeleteIcon = ({ size = 24 }: Props) => (
 );
 export const ArchiveIcon = ({ size = 24 }: Props) => (
   <ArchiveSvg width={size} height={size} />
+);
+
+export const LoadingIcon = ({ size = 24 }: Props) => (
+  <LoadingSvg width={size} height={size} />
 );
 
 export const CopyIcon = ({ size = 24 }: Props) => (

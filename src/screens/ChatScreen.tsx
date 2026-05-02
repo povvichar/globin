@@ -4,6 +4,7 @@ import {
   Dimensions,
   FlatList,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   Pressable,
   StyleSheet,
@@ -12,11 +13,12 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
 import { ChatInput } from '../components/ChatInput';
 import { Drawer } from '../components/Drawer';
 import { GlobinLogo } from '../components/GlobinLogo';
 import { GradientText } from '../components/GradientText';
-import { CopyIcon, DotsIcon, MenuIcon, PencilIcon, ShareIcon, SpeakerIcon, ThumbDownIcon, ThumbUpIcon } from '../components/Icons';
+import { CopyIcon, DeleteIcon, DotsIcon, LoadingIcon, MenuIcon, PencilIcon, ShareIcon, SpeakerIcon, ThumbDownIcon, ThumbUpIcon } from '../components/Icons';
 import { colors } from '../constants/colors';
 import { typography } from '../constants/typography';
 
@@ -49,41 +51,94 @@ function getRandomResponse(): string {
 }
 
 const TypingIndicator = () => {
-  const dot1 = useRef(new Animated.Value(0)).current;
-  const dot2 = useRef(new Animated.Value(0)).current;
-  const dot3 = useRef(new Animated.Value(0)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const animate = (dot: Animated.Value, delay: number) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.delay(delay),
-          Animated.timing(dot, { toValue: 1, duration: 300, useNativeDriver: true }),
-          Animated.timing(dot, { toValue: 0, duration: 300, useNativeDriver: true }),
-          Animated.delay(600 - delay),
-        ])
-      );
-
-    const a1 = animate(dot1, 0);
-    const a2 = animate(dot2, 200);
-    const a3 = animate(dot3, 400);
-    a1.start(); a2.start(); a3.start();
-    return () => { a1.stop(); a2.stop(); a3.stop(); };
+    const loop = Animated.loop(
+      Animated.timing(rotateAnim, {
+        toValue: 1,
+        duration: 900,
+        useNativeDriver: true,
+      })
+    );
+    loop.start();
+    return () => loop.stop();
   }, []);
 
-  const dotStyle = (anim: Animated.Value) => ({
-    opacity: anim.interpolate({ inputRange: [0, 1], outputRange: [0.3, 1] }),
-    transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) }],
+  const rotate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
   });
 
   return (
     <View style={styles.botRow}>
-      <View style={styles.typingBubble}>
-        <Animated.View style={[styles.typingDot, dotStyle(dot1)]} />
-        <Animated.View style={[styles.typingDot, dotStyle(dot2)]} />
-        <Animated.View style={[styles.typingDot, dotStyle(dot3)]} />
-      </View>
+      <Animated.View style={{ transform: [{ rotate }] }}>
+        <LoadingIcon size={20} />
+      </Animated.View>
     </View>
+  );
+};
+
+const ChatOptionsMenu = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    if (visible) {
+      setMounted(true);
+      scaleAnim.setValue(0);
+      opacityAnim.setValue(0);
+      Animated.parallel([
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+          damping: 14,
+          stiffness: 340,
+          mass: 0.6,
+        }),
+        Animated.timing(opacityAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(scaleAnim, { toValue: 0.85, duration: 130, useNativeDriver: true }),
+        Animated.timing(opacityAnim, { toValue: 0, duration: 130, useNativeDriver: true }),
+      ]).start(() => setMounted(false));
+    }
+  }, [visible]);
+
+  if (!mounted) return null;
+
+  const menuHeight = 156;
+
+  return (
+    <Modal transparent animationType="none" visible={mounted} onRequestClose={onClose}>
+      <Pressable style={styles.menuBackdrop} onPress={onClose}>
+        <Animated.View style={[styles.menuContainer, {
+          opacity: opacityAnim,
+          transform: [
+            { translateY: scaleAnim.interpolate({ inputRange: [0, 1], outputRange: [-menuHeight / 2, 0] }) },
+            { scaleX: scaleAnim },
+            { scaleY: scaleAnim },
+          ],
+        }]}>
+          <BlurView intensity={70} tint="light" style={styles.menuBlur}>
+            <TouchableOpacity style={[styles.menuItem, styles.menuItemBorder]} activeOpacity={0.7} onPress={onClose}>
+              <ShareIcon size={20} />
+              <Text style={styles.menuItemText}>Share</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuItem, styles.menuItemBorder]} activeOpacity={0.7} onPress={onClose}>
+              <PencilIcon size={20} />
+              <Text style={styles.menuItemText}>Rename</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={onClose}>
+              <DeleteIcon size={20} />
+              <Text style={[styles.menuItemText, styles.menuItemDanger]}>Delete</Text>
+            </TouchableOpacity>
+          </BlurView>
+        </Animated.View>
+      </Pressable>
+    </Modal>
   );
 };
 
@@ -119,6 +174,7 @@ export const ChatScreen = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [conversationTitle, setConversationTitle] = useState<string | null>(null);
+  const [menuVisible, setMenuVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const radiusAnim = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef<FlatList>(null);
@@ -175,7 +231,7 @@ export const ChatScreen = () => {
       };
       setMessages(prev => [...prev, botMsg]);
       setIsTyping(false);
-    }, 1000 + Math.random() * 800);
+    }, 1800 + Math.random() * 1200);
   };
 
   const scrollToBottom = () => {
@@ -214,7 +270,7 @@ export const ChatScreen = () => {
                     <TouchableOpacity hitSlop={10} activeOpacity={0.6} onPress={() => { setMessages([]); setConversationTitle(null); }}>
                       <PencilIcon size={24} />
                     </TouchableOpacity>
-                    <TouchableOpacity hitSlop={10} activeOpacity={0.6}>
+                    <TouchableOpacity hitSlop={10} activeOpacity={0.6} onPress={() => setMenuVisible(true)}>
                       <DotsIcon size={24} />
                     </TouchableOpacity>
                   </>
@@ -253,6 +309,8 @@ export const ChatScreen = () => {
           )}
         </Animated.View>
       </Animated.View>
+
+      <ChatOptionsMenu visible={menuVisible} onClose={() => setMenuVisible(false)} />
     </View>
   );
 };
@@ -385,5 +443,44 @@ const styles = StyleSheet.create({
     height: 7,
     borderRadius: 3.5,
     backgroundColor: colors.textMuted,
+  },
+  menuBackdrop: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  menuContainer: {
+    position: 'absolute',
+    top: 100,
+    right: 16,
+    width: 200,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOpacity: 0.14,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 12,
+  },
+  menuBlur: {
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  menuItemBorder: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  menuItemText: {
+    ...typography.button,
+    color: colors.textPrimary,
+  },
+  menuItemDanger: {
+    color: '#E53935',
   },
 });
